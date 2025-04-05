@@ -84,8 +84,8 @@ class Menu
 
     private static function getGroupMenu(): MenuItem
     {
-        $groupMenu = new MenuItem(gettext('Groups'), '', true, 'fa-users');
-        $groupMenu->addSubMenu(new MenuItem(gettext('List Groups'), 'GroupList.php'));
+        $groupMenu = new MenuItem(gettext('Districts'), '', true, 'fa-users');
+        $groupMenu->addSubMenu(new MenuItem(gettext('List Districts'), 'GroupList.php'));
 
         $listOptions = ListOptionQuery::create()->filterById(3)->orderByOptionSequence()->find();
 
@@ -105,8 +105,8 @@ class Menu
         }
 
         $adminMenu = new MenuItem(gettext('Admin'), '', AuthenticationManager::getCurrentUser()->isAdmin());
-        $adminMenu->addSubMenu(new MenuItem(gettext('Group Properties'), 'PropertyList.php?Type=g', AuthenticationManager::getCurrentUser()->isAdmin()));
-        $adminMenu->addSubMenu(new MenuItem(gettext('Group Types'), 'OptionManager.php?mode=grptypes', AuthenticationManager::getCurrentUser()->isAdmin()));
+        $adminMenu->addSubMenu(new MenuItem(gettext('District Properties'), 'PropertyList.php?Type=g', AuthenticationManager::getCurrentUser()->isAdmin()));
+        $adminMenu->addSubMenu(new MenuItem(gettext('District Types'), 'OptionManager.php?mode=grptypes', AuthenticationManager::getCurrentUser()->isAdmin()));
 
         $groupMenu->addSubMenu($adminMenu);
 

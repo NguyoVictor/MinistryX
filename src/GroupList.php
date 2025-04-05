@@ -3,7 +3,7 @@
 require_once 'Include/Config.php';
 require_once 'Include/Functions.php';
 
-$sPageTitle = gettext('Group Listing');
+$sPageTitle = gettext('District Listing');
 require_once 'Include/Header.php';
 
 use ChurchCRM\Authentication\AuthenticationManager;
@@ -17,7 +17,7 @@ $rsGroupTypes = ListOptionQuery::create()->filterById('3')->find();
 
 <p>
 <label>
-<?= gettext("Show type of group:") ?>
+<?= gettext("Show type of district:") ?>
 <select id="table-filter" class="form-control input-sm">
 <option value=""><?= gettext("All") ?></option>
 <?php
@@ -38,11 +38,11 @@ if (AuthenticationManager::getCurrentUser()->isManageGroupsEnabled()) {
 
 <br>
 <form action="#" method="get" class="form">
-    <label for="addNewGroup"><?= gettext('Add New Group') ?> :</label>
+    <label for="addNewGroup"><?= gettext('Add New District') ?> :</label>
     <input class="form-control newGroup" name="groupName" id="groupName" style="width:100%">
     <br>
     <div class="text-right">
-        <button type="button" class="btn btn-primary" id="addNewGroup"><?= gettext('Add New Group') ?></button>
+        <button type="button" class="btn btn-primary" id="addNewGroup"><?= gettext('Add New District') ?></button>
     </div>
 </form>
     <?php
