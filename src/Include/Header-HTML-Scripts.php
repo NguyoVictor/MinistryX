@@ -3,7 +3,7 @@
 use ChurchCRM\dto\SystemURLs;
 
 ?>
-<title>ChurchCRM: <?= $sPageTitle ?></title>
+<title>MinistryX: <?= $sPageTitle ?></title>
 
 <!-- Custom ChurchCRM styles -->
 <link rel="stylesheet" href="<?= SystemURLs::getRootPath() ?>/skin/churchcrm.min.css">

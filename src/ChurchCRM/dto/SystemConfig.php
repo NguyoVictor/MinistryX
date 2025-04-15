@@ -194,7 +194,7 @@ class SystemConfig
             'sChurchName'                          => new ConfigItem(1003, 'sChurchName', 'text', '', gettext('Church Name')),
             'sChurchAddress'                       => new ConfigItem(1004, 'sChurchAddress', 'text', '', gettext('Church Address')),
             'sChurchCity'                          => new ConfigItem(1005, 'sChurchCity', 'text', '', gettext('Church City')),
-            'sChurchState'                         => new ConfigItem(1006, 'sChurchState', 'text', '', gettext('Church State')),
+            'sChurchState'                         => new ConfigItem(1006, 'sChurchCounty', 'text', '', gettext('Church County')),
             'sChurchZip'                           => new ConfigItem(1007, 'sChurchZip', 'text', '', gettext('Church Zip')),
             'sChurchPhone'                         => new ConfigItem(1008, 'sChurchPhone', 'text', '', gettext('Church Phone')),
             'sChurchEmail'                         => new ConfigItem(1009, 'sChurchEmail', 'text', '', gettext('Church Email')),

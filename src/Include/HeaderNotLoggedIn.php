@@ -22,7 +22,7 @@ if (SystemConfig::debugEnabled()) {
     <!-- jQuery JS -->
     <script src="<?= SystemURLs::getRootPath() ?>/skin/external/jquery/jquery.min.js"></script>
 
-    <title>ChurchCRM: <?= $sPageTitle ?></title>
+    <title>MinistryX: <?= $sPageTitle ?></title>
 
 </head>
 <body class="hold-transition login-page">

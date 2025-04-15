@@ -16,9 +16,10 @@ $isAdmin = AuthenticationManager::getCurrentUser()->isAdmin();
     <div class="float-right d-none d-sm-block">
         <b><?= gettext('Version') ?></b> <?= $_SESSION['sSoftwareInstalledVersion'] ?>
     </div>
-    <strong><?= gettext('Copyright') ?> &copy; <?= SystemService::getCopyrightDate() ?> <a href="https://churchcrm.io" target="_blank"><b>Church</b>CRM</a>.</strong> <?= gettext('All rights reserved') ?>.
-    | <a href="https://twitter.com/church_crm" target="_blank"><?= gettext("Follow us on") ?> <i class="fa-brands fa-x-twitter"></i> </a>
-    | <span class="fi fi-squared"></span>
+    <strong><?= gettext('Copyright') ?> &copy; <?= SystemService::getCopyrightDate() ?> <a href="https://churchcrm.io" target="_blank"><b>Ministry</b>X</a>.</strong> <?= gettext('All rights reserved') ?>.
+    <a href="https://www.linkedin.com/in/victornguyo/" target="_blank"><?= gettext("Follow us on") ?> <i class="fa-brands fa-linkedin"></i> </a>
+    | | <img src="https://flagcdn.com/w40/ke.png" alt="Kenya Flag" width="20" height="15"> Kenya
+
 </footer>
 
 <!-- The Right Sidebar -->

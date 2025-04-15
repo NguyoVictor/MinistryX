@@ -177,10 +177,10 @@ $MenuFirst = 1;
     <!-- Logo -->
       <a href="<?= SystemURLs::getRootPath() ?>/v2/dashboard" class="brand-link">
           <!-- mini logo for sidebar mini 50x50 pixels -->
-          <img src="<?= SystemURLs::getRootPath() ?>/Images/CRM_50x50.png" alt="ChurchCRM Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+          <img src="<?= SystemURLs::getRootPath() ?>/Images/top-left-logo.png" alt="MinistryX Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
           <!-- logo for regular state and mobile devices -->
           <?php
-            $headerHTML = '<b>Church</b>CRM';
+            $headerHTML = '<b>Ministry</b>X';
             $sHeader = SystemConfig::getValue("sHeader");
             if (!empty($sHeader)) {
                 $headerHTML = html_entity_decode($sHeader, ENT_QUOTES);

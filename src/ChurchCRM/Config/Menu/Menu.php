@@ -212,7 +212,6 @@ class Menu
         $menu->addSubMenu(new MenuItem(gettext('Backup Database'), 'BackupDatabase.php', AuthenticationManager::getCurrentUser()->isAdmin()));
         $menu->addSubMenu(new MenuItem(gettext('CSV Import'), 'CSVImport.php', AuthenticationManager::getCurrentUser()->isAdmin()));
         $menu->addSubMenu(new MenuItem(gettext('CSV Export Records'), 'CSVExport.php', AuthenticationManager::getCurrentUser()->isCSVExport()));
-        $menu->addSubMenu(new MenuItem(gettext('Kiosk Manager'), 'KioskManager.php', AuthenticationManager::getCurrentUser()->isAdmin()));
         $menu->addSubMenu(new MenuItem(gettext('Debug'), 'v2/admin/debug', AuthenticationManager::getCurrentUser()->isAdmin()));
         $menu->addSubMenu(new MenuItem(gettext('Custom Menus'), 'v2/admin/menus', AuthenticationManager::getCurrentUser()->isAdmin()));
         $menu->addSubMenu(new MenuItem(gettext('Reset System'), 'v2/admin/database/reset', AuthenticationManager::getCurrentUser()->isAdmin()));
