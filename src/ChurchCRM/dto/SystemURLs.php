@@ -44,7 +44,7 @@ class SystemURLs
 
     public static function getImagesRoot(): string
     {
-        return self::$documentRoot . '/Images';
+        return self::$documentRoot . '/Images/top-left-logo.png';
     }
 
     public static function getURLs()

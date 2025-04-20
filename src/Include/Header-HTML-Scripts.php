@@ -4,6 +4,7 @@ use ChurchCRM\dto\SystemURLs;
 
 ?>
 <title>MinistryX: <?= $sPageTitle ?></title>
+<link rel="icon" href="<?= SystemURLs::getRootPath() ?>/Images/top-left-logo.png">
 
 <!-- Custom ChurchCRM styles -->
 <link rel="stylesheet" href="<?= SystemURLs::getRootPath() ?>/skin/churchcrm.min.css">
