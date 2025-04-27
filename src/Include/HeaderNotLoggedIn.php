@@ -23,6 +23,8 @@ if (SystemConfig::debugEnabled()) {
     <script src="<?= SystemURLs::getRootPath() ?>/skin/external/jquery/jquery.min.js"></script>
 
     <title>MinistryX: <?= $sPageTitle ?></title>
+    <link rel="icon" href="<?= SystemURLs::getRootPath() ?>/Images/top-left-logo.png">
+
 
 </head>
 <body class="hold-transition login-page">

@@ -6,8 +6,10 @@ use ChurchCRM\Service\SystemService;
 
 ?>
     <div style="background-color: white; padding-top: 5px; padding-bottom: 5px; text-align: center; position: fixed; bottom: 0; width: 100%">
-      <strong><?= gettext('Copyright') ?> &copy; <?= SystemService::getCopyrightDate() ?> <a href="https://churchcrm.io" target="_blank"><b>Ministry</b>X</a>.</strong> <?= gettext('All rights reserved')?>.
-    </div>
+    <strong><?= gettext('Copyright') ?> &copy; <?= SystemService::getCopyrightDate() ?> <a href="https://www.linkedin.com/in/victornguyo/" target="_blank"><b>Ministry</b>X</a>.</strong> <?= gettext('All rights reserved') ?>.
+    <a href="https://www.linkedin.com/in/victornguyo/" target="_blank"><?= gettext("Follow us on") ?> <i class="fa-brands fa-linkedin"></i> </a>
+    | | <img src="https://flagcdn.com/w40/ke.png" alt="Kenya Flag" width="20" height="15"> Kenya
+  </div>
 
   <script src="<?= SystemURLs::getRootPath() ?>/skin/external/select2/select2.full.min.js"></script>
 
