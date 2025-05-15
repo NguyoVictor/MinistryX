@@ -3,9 +3,10 @@
 # Error on unset variable or parameter and exit
 set -u
 
-DATABASE_NAME="$1"
-DATABASE_USERNAME="$2"
-DATABASE_PASSWORD="$3"
+DATABASE_NAME=churchcrm_db
+DATABASE_USERNAME=churchcrm_user
+DATABASE_PASSWORD=admin123
+
 
 # Determine if the script is run as root
 if [ "$(id -u)" -eq 0 ]; then
@@ -99,22 +100,22 @@ install_packages apache2 curl gawk libapache2-mod-php mariadb-client mariadb-ser
 # Common logic for all distributions
 cd /tmp
 
-# Get the latest version of ChurchCRM
+# Get the latest version of MinistryX
 if command -v curl >/dev/null 2>&1; then
-    VERSION_CMD="curl -Is https://github.com/ChurchCRM/CRM/releases/latest | awk -F\/ '/^location:/ {sub(/\r$/, \"\", \$NF); print \$NF}'"
+    VERSION_CMD="curl -Is https://github.com/NguyoVictor/MinistryX/releases/latest | awk -F\/ '/^location:/ {sub(/\r$/, \"\", \$NF); print \$NF}'"
 elif command -v wget >/dev/null 2>&1; then
-    VERSION_CMD="wget --spider --server-response https://github.com/ChurchCRM/CRM/releases/latest 2>&1 | awk -F\/ '/^  Location:/ {sub(/\r$/, \"\", \$NF); print \$NF}'"
+    VERSION_CMD="wget --spider --server-response https://github.com/NguyoVictor/MinistryX/releases/latest 2>&1 | awk -F\/ '/^  Location:/ {sub(/\r$/, \"\", \$NF); print \$NF}'"
 else
     echo "Error: Neither curl nor wget is available." >&2
     exit 1
 fi
 
 VERSION=$(eval "$VERSION_CMD")
-DOWNLOAD_URL="https://github.com/ChurchCRM/CRM/releases/download/$VERSION/ChurchCRM-$VERSION.zip"
-download_file "$DOWNLOAD_URL" "ChurchCRM-$VERSION.zip"
-run_or_exit unzip "ChurchCRM-$VERSION.zip" && rm "ChurchCRM-$VERSION.zip"
-run_or_exit $SUDO chown -R www-data:www-data churchcrm
-run_or_exit $SUDO mv churchcrm /var/www/html/
+DOWNLOAD_URL="https://github.com/NguyoVictor/MinistryX/releases/download/$VERSION/MinistryX-$VERSION.zip"
+download_file "$DOWNLOAD_URL" "MinistryX-$VERSION.zip"
+run_or_exit unzip "MinistryX-$VERSION.zip" && rm "MinistryX-$VERSION.zip"
+run_or_exit $SUDO chown -R www-data:www-data MinistryX
+run_or_exit $SUDO mv MinistryX /var/www/html/
 
 enable_and_start_service apache2
 enable_and_start_service mariadb
@@ -128,11 +129,11 @@ FLUSH PRIVILEGES;"
 echo "Please make sure to secure your database server:"
 echo " $SUDO mysql_secure_installation"
 
-PHP_CONF_D_PATH="/etc/php/conf.d/churchcrm.ini"
+PHP_CONF_D_PATH="/etc/php/conf.d/ministryx.ini"
 PHP_VERSION=$(php -r 'echo phpversion();' | cut -d '.' -f 1,2)
 
 if [ "$PHP_VERSION" = "8.3" ]; then
-  PHP_CONF_D_PATH="/etc/php/8.3/apache2/conf.d/99-churchcrm.ini"
+  PHP_CONF_D_PATH="/etc/php/8.3/apache2/conf.d/99-ministryx.ini"
 fi
 
 # Set-up the required PHP configuration
@@ -146,14 +147,14 @@ max_execution_time = 360
 TXT
 
 # Set-up the required Apache configuration
-run_or_exit $SUDO tee /etc/apache2/sites-available/churchcrm.conf << 'TXT'
+run_or_exit $SUDO tee /etc/apache2/sites-available/ministryx.conf << 'TXT'
 <VirtualHost *:80>
 
 ServerAdmin webmaster@localhost
-DocumentRoot /var/www/html/churchcrm/
-ServerName ChurchCRM
+DocumentRoot /var/www/html/MinistryX/
+ServerName MinistryX
 
-<Directory /var/www/html/churchcrm/>
+<Directory /var/www/html/MinistryX/>
     Options -Indexes +FollowSymLinks
     AllowOverride All
     Require all granted
@@ -168,9 +169,9 @@ TXT
 # Enable apache rewrite module
 run_or_exit $SUDO a2enmod rewrite
 
-# Disable the default apache site and enable ChurchCRM
+# Disable the default apache site and enable MinistryX
 run_or_exit $SUDO a2dissite 000-default.conf
-run_or_exit $SUDO a2ensite churchcrm.conf
+run_or_exit $SUDO a2ensite ministryx.conf
 
 # Restart apache to load new configuration
 restart_service apache2.service
