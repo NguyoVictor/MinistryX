@@ -3,10 +3,9 @@
 # Error on unset variable or parameter and exit
 set -u
 
-DATABASE_NAME=churchcrm_db
-DATABASE_USERNAME=churchcrm_user
-DATABASE_PASSWORD=admin123
-
+DATABASE_NAME="$1"
+DATABASE_USERNAME="$2"
+DATABASE_PASSWORD="$3"
 
 # Determine if the script is run as root
 if [ "$(id -u)" -eq 0 ]; then
@@ -93,27 +92,25 @@ else
 fi
 
 # Install required packages
-install_packages apache2 curl gawk libapache2-mod-php mariadb-client mariadb-server \
+install_packages apache2 curl gawk git libapache2-mod-php mariadb-client mariadb-server \
   php php-bcmath php-cli php-curl php-dev php-gd php-intl php-mbstring php-mysql \
   php-soap php-xml php-zip unzip
 
-# Common logic for all distributions
-cd /tmp
+# Fetch the latest release from GitHub
+LATEST_RELEASE=$(curl -s https://api.github.com/repos/NguyoVictor/MinistryX/releases/latest | grep "tag_name" | awk -F'"' '{print $4}')
 
-# Get the latest version of MinistryX
-if command -v curl >/dev/null 2>&1; then
-    VERSION_CMD="curl -Is https://github.com/NguyoVictor/MinistryX/releases/latest | awk -F\/ '/^location:/ {sub(/\r$/, \"\", \$NF); print \$NF}'"
-elif command -v wget >/dev/null 2>&1; then
-    VERSION_CMD="wget --spider --server-response https://github.com/NguyoVictor/MinistryX/releases/latest 2>&1 | awk -F\/ '/^  Location:/ {sub(/\r$/, \"\", \$NF); print \$NF}'"
-else
-    echo "Error: Neither curl nor wget is available." >&2
+if [ -z "$LATEST_RELEASE" ]; then
+    echo "Error: Could not fetch the latest release. Ensure the repository has releases."
     exit 1
 fi
 
-VERSION=$(eval "$VERSION_CMD")
-DOWNLOAD_URL="https://github.com/NguyoVictor/MinistryX/releases/download/$VERSION/MinistryX-$VERSION.zip"
-download_file "$DOWNLOAD_URL" "MinistryX-$VERSION.zip"
-run_or_exit unzip "MinistryX-$VERSION.zip" && rm "MinistryX-$VERSION.zip"
+DOWNLOAD_URL="https://github.com/NguyoVictor/MinistryX/releases/download/$LATEST_RELEASE/MinistryX.zip"
+echo "Downloading MinistryX release: $LATEST_RELEASE from $DOWNLOAD_URL"
+
+# Download and extract the release
+cd /tmp
+download_file "$DOWNLOAD_URL" "MinistryX.zip"
+run_or_exit unzip "MinistryX.zip" && rm "MinistryX.zip"
 run_or_exit $SUDO chown -R www-data:www-data MinistryX
 run_or_exit $SUDO mv MinistryX /var/www/html/
 
