@@ -1,47 +1,61 @@
-# This is the developer docker-compose.yml file. You can build and Run ChurchCRM
-# from this file by first filling in your password and db info in the .env
-# file and then running "docker compose -f docker-compose.develop.yaml build", and
-# "docker compose -f docker-compose.develop.yaml up" in your terminal.
+version: '3'
 services:
   database:
     image: mariadb
     ports:
       - "3306:3306"
-    env_file:
-      - .env
-    networks:
-      - default
+    environment:
+      - MYSQL_ROOT_PASSWORD=secure_root_password_123
+      - MYSQL_DATABASE=churchcrm
+      - MYSQL_USER=churchcrm
+      - MYSQL_PASSWORD=secure_user_password_456
     volumes:
-      - ../demo:/docker-entrypoint-initdb.d # auto-load the demo database as per: https://hub.docker.com/_/mariadb
+      - ./demo:/docker-entrypoint-initdb.d
     healthcheck:
       test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
       timeout: 20s
       retries: 10
+    networks:
+      - ministry-network
 
   mailserver:
-    #  Reference: https://blog.mailtrap.io/mailhog-explained/
     image: mailhog/mailhog
     ports:
-      - ${DEV_MAILSERVER_PORT:-1025}:1025
-      - ${DEV_MAILSERVER_GUI_PORT:-8025}:8025
+      - "1025:1025"
+      - "8025:8025"
     hostname: crmEmailServer
+    networks:
+      - ministry-network
 
   webserver:
-    ## Look into: https://hub.docker.com/r/nimmis/apache-php8
     build:
-      context: .
+      context: ./docker
       dockerfile: Dockerfile.churchcrm-apache-php8-test-debian
-    image: churchcrm/crm:php8-debian
+    image: churchcrm/crm:php8-debian-fixed
     ports:
       - "80:80"
     volumes:
-      - ../src:/var/www/html      # Maps the local src directory to the web server's document root
-      - ..:/home/ChurchCRM        # Mounts the entire project directory to the container for broader access
-    links:
-      - database
-      - mailserver
-    env_file:
-      - .env
+      - ./src:/var/www/html
+      - .:/home/ChurchCRM
     depends_on:
       database:
         condition: service_healthy
+    networks:
+      - ministry-network
+    # Add this command to create logs directory and fix permissions at startup
+    command: >
+      bash -c "
+        mkdir -p /var/www/html/logs /var/www/html/Images &&
+        chown -R www-data:www-data /var/www/html &&
+        chmod -R 755 /var/www/html &&
+        chmod -R 775 /var/www/html/logs /var/www/html/Images &&
+        if [ ! -f /var/www/html/index.php ] && [ ! -f /var/www/html/index.html ]; then
+          echo '<?php phpinfo(); ?>' > /var/www/html/index.php;
+          chown www-data:www-data /var/www/html/index.php;
+        fi &&
+        apache2-foreground
+      "
+
+networks:
+  ministry-network:
+    driver: bridge
