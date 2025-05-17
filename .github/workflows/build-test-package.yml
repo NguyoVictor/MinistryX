@@ -40,15 +40,24 @@ jobs:
       id: package-version
       uses: martinbeentjes/npm-get-version-action@main
 
+    - name: Check Dependencies Sync
+      id: check-deps
+      run: |
+        if ! npm ci --dry-run --ignore-scripts; then
+          echo "Dependencies are not in sync! Please update package-lock.json."
+          exit 1
+        fi
+        echo "Dependencies are in sync."
+
     - name: Get Env Ready
       run: |
         npm ci
 
-    # - name: Get Composer Cache Directory
-    #   id: composer-cache
-    #   run: |
-    #     cd src
-    #     echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        cd src
+        echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
     - uses: actions/cache@v4
       with:
