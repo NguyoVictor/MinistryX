@@ -105,8 +105,10 @@ jobs:
     - name: Upload zip file
       uses: actions/upload-artifact@v4
       with:
-        name: ChurchCRM-${{ steps.package-version.outputs.current-version}}-files
+        name: ChurchCRM-${{ steps.package-version.outputs.current-version}}
         path: target/ChurchCRM-${{ steps.package-version.outputs.current-version }}.*
+        if-no-files-found: error
+        retention-days: 30
         
     - name: Get latest commit message
       id: commit-message
