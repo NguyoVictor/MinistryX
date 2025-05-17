@@ -1,6 +1,6 @@
 {
     "name": "churchcrm",
-    "version": "5.17.0",
+    "version": "5.17.0", 
     "description": "Free Church CRM Software",
     "repository": {
         "type": "git",
@@ -79,13 +79,17 @@
         "jquery-steps": "^1.1.0",
         "jquery-validation": "^1.21.0",
         "pace-js": "^1.2.4",
+        "react": "^19.1.0",
         "react-bootstrap": "^2.10.9",
         "react-datepicker": "^8.1.0",
+        "react-dom": "^19.1.0",
         "react-select": "^5.10.1",
+        "run-p": "^0.0.0",
         "select2": "^4.0.13"
     },
     "devDependencies": {
         "@types/jquery": "^3.5.32",
+        "@types/react-dom": "^19.1.5",
         "babel-cli": "^6.26.0",
         "babel-core": "^6.26.3",
         "babel-loader": "^9.2.1",

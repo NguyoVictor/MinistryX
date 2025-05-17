@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as ReactDOM from "react-dom/client";
 import UserTwoFactorEnrollment from "./components/UserSecurity/UserTwoFactorEnrollment";
 
 declare global {
@@ -11,8 +11,7 @@ declare global {
   }
 }
 $(document).ready(function () {
-  ReactDOM.render(
-    <UserTwoFactorEnrollment />,
-    document.getElementById("two-factor-enrollment-react-app"),
-  );
+  const container = document.getElementById("two-factor-enrollment-react-app");
+  const root = ReactDOM.createRoot(container);
+  root.render(<UserTwoFactorEnrollment />);
 });

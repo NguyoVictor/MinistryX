@@ -49,3 +49,8 @@ cypress/screenshots
 cypress/videos
 cypress/downloads
 cypress.config.ts
+
+.github/workflows/release.yml
+.github/workflows/deploy.yml
+
+install/deploy.sh
