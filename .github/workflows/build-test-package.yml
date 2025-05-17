@@ -116,10 +116,14 @@ jobs:
         COMMIT_MSG=$(git log -1 --pretty=%B)
         echo "message=$COMMIT_MSG" >> $GITHUB_OUTPUT
 
-    - name: Test
+    - name: Build project
       run: |
         COMMIT_MSG=$(git log -1 --pretty=%B)
         echo "message=$COMMIT_MSG" >>  Release.txt
+        zip -r target/MinistryX-1.0.0.zip target/
+
+    - name: List files in target
+      run: ls -l target
         
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2.2.2
