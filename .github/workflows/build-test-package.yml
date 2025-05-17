@@ -34,11 +34,21 @@ jobs:
     - name: Declare some variables
       id: vars
       shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
 
-    - name: get-npm-version
+    - name: Get version from git tag
       id: package-version
-      uses: martinbeentjes/npm-get-version-action@main
+      run: |
+        # Get the tag as version if available, otherwise use package.json
+        GIT_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        if [[ ! -z "$GIT_TAG" ]]; then
+          VERSION=$(echo $GIT_TAG | sed 's/^v//')
+          echo "current-version=$VERSION" >> $GITHUB_OUTPUT
+        else
+          # Fallback to npm version if no tag
+          NPM_VERSION=$(node -p "require('./package.json').version")
+          echo "current-version=$NPM_VERSION" >> $GITHUB_OUTPUT
+        fi
 
     - name: Check Dependencies Sync
       id: check-deps
@@ -93,5 +103,5 @@ jobs:
     - name: Upload zip file
       uses: actions/upload-artifact@v4
       with:
-        name: MinistryX-${{ steps.package-version.outputs.current-version}}-files
-        path: target/MinistryX-*.*
+        name: ChurchCRM-${{ steps.package-version.outputs.current-version}}-files
+        path: target/ChurchCRM-${{ steps.package-version.outputs.current-version }}.*
