@@ -50,7 +50,6 @@ cypress/videos
 cypress/downloads
 cypress.config.ts
 
-.github/workflows/release.yml
-.github/workflows/deploy.yml
+.github/*
 
-install/deploy.sh
+install/*
