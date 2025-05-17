@@ -35,8 +35,8 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ../src:/var/www/html
-      - ..:/home/ChurchCRM
+      - ../src:/var/www/html      # Maps the local src directory to the web server's document root
+      - ..:/home/ChurchCRM        # Mounts the entire project directory to the container for broader access
     links:
       - database
       - mailserver
