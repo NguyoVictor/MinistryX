@@ -298,7 +298,8 @@ class Bootstrapper
         if (!SystemConfig::isInitialized()) {
             SystemConfig::init();
         }
-        require_once '../Include/HeaderNotLoggedIn.php'; ?>
+        // Use SystemURLs to get the document root for absolute paths
+        require_once SystemURLs::getDocumentRoot() . '/Include/HeaderNotLoggedIn.php'; ?>
     <div class='container'>
         <h3>ChurchCRM – <?= _($header) ?></h3>
         <div class='alert alert-danger text-center' style='margin-top: 20px;'>
@@ -306,7 +307,7 @@ class Bootstrapper
         </div>
     </div>
         <?php
-        require_once '../Include/FooterNotLoggedIn.php';
+        require_once SystemURLs::getDocumentRoot() . '/Include/FooterNotLoggedIn.php';
         exit();
     }
     public static function isDBCurrent(): bool

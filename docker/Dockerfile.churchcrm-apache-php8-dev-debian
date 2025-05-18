@@ -1,5 +1,4 @@
-FROM php:8-apache
-LABEL maintainer="MinistryX Team"
+FROM  php:8-apache
 
 EXPOSE 80
 
@@ -14,13 +13,12 @@ RUN apt-get update && \
         libfreetype6-dev \
         libmcrypt-dev \
         libjpeg-dev \
-        git \
-        nano
+        git
 
 RUN docker-php-ext-install -j$(nproc) xml exif pdo_mysql gettext iconv mysqli zip
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
-RUN docker-php-ext-install -j$(nproc) gd
+RUN docker-php-ext-install -j$(nproc) gd && pecl install xdebug && docker-php-ext-enable xdebug
 
 COPY ./apache/default.conf /etc/apache2/apache2.conf
 RUN a2enmod rewrite
@@ -32,23 +30,18 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
     sed -i 's/^memory_limit.*$/memory_limit = 2G/g' $PHP_INI_DIR/php.ini && \
     sed -i 's/^max_execution_time.*$/max_execution_time = 120/g' $PHP_INI_DIR/php.ini
 
-# Create directory structure with proper permissions
-RUN mkdir -p /var/www/html/logs /var/www/html/Images && \
-    chown -R www-data:www-data /var/www/html && \
-    chmod -R 755 /var/www/html && \
-    chmod -R 775 /var/www/html/logs /var/www/html/Images
+RUN apt-get update && \
+    apt-get install -y \
+        make \
+        python3
 
-# Create a test index file to verify server is working
-RUN echo '<?php echo "<h1>MinistryX Server</h1><p>The server is running correctly!</p>"; ?>' > /var/www/html/index.php && \
-    chown www-data:www-data /var/www/html/index.php
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
+    rm composer-setup.php
 
-# Add default .htaccess file with proper permissions
-RUN echo '<IfModule mod_rewrite.c>\n\
-    RewriteEngine On\n\
-    RewriteBase /\n\
-    RewriteCond %{REQUEST_FILENAME} !-f\n\
-    RewriteCond %{REQUEST_FILENAME} !-d\n\
-    RewriteRule ^ index.php [L]\n\
-</IfModule>' > /var/www/html/.htaccess && \
-    chown www-data:www-data /var/www/html/.htaccess && \
-    chmod 644 /var/www/html/.htaccess
+RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh -o /opt/node-install.sh && \
+    chmod a+x /opt/node-install.sh && \
+    /opt/node-install.sh && \
+    rm /opt/node-install.sh
+
+RUN /bin/bash -c "source /root/.nvm/nvm.sh && nvm install --lts && npm install -g node-gyp"
