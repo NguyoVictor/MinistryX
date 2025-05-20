@@ -52,4 +52,4 @@ cypress.config.ts
 
 .github/*
 
-install/*
+# install/*
