@@ -3,17 +3,16 @@
 # file and then running "docker compose -f docker-compose.develop.yaml build", and
 # "docker compose -f docker-compose.develop.yaml up" in your terminal.
 services:
-  database:
-    image: mariadb
+  mariadb:
+    build: .
+    container_name: churchcrm-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: tiger
+      MYSQL_DATABASE: churchcrm
     ports:
       - "3306:3306"
-    env_file:
-      - .env
-    networks:
-      - default
     volumes:
-      - ../demo:/docker-entrypoint-initdb.d # auto-load the demo database as per: https://hub.docker.com/_/mariadb
-    command: --init-file=/docker-entrypoint-initdb.d/init-user.sql
+      - mariadb_data:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
       timeout: 20s

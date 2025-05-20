@@ -1,0 +1,11 @@
+FROM mariadb:latest
+
+# Set environment variables
+ENV MYSQL_ROOT_PASSWORD=rootpassword
+ENV MYSQL_DATABASE=churchcrm
+
+# Copy initialization script
+COPY ./init.sql /docker-entrypoint-initdb.d/
+
+# Expose MariaDB port
+EXPOSE 3306
