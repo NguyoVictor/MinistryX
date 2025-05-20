@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as ReactDOM from "react-dom/client";
 import ExistingEvent from "./components/Events/ExistingEvent";
 declare global {
   interface Window {
@@ -19,36 +19,57 @@ declare global {
   }
 }
 
+// Keep track of the root to unmount it
+let root = null;
+
 window.showEventForm = function (event) {
-  const unmount = function () {
-    ReactDOM.unmountComponentAtNode(
-      document.getElementById("calendar-event-react-app"),
-    );
+  const container = document.getElementById("calendar-event-react-app");
+  
+  // Cleanup previous render
+  if (root) {
+    root.unmount();
     window.CRM.refreshAllFullCalendarSources();
+  }
+  
+  // Create a new rendering
+  root = ReactDOM.createRoot(container);
+  const unmount = function() {
+    if (root) {
+      root.unmount();
+      window.CRM.refreshAllFullCalendarSources();
+    }
   };
-  unmount();
-  ReactDOM.render(
-    <ExistingEvent onClose={unmount} eventId={event.id} />,
-    document.getElementById("calendar-event-react-app"),
+  
+  root.render(
+    <ExistingEvent onClose={unmount} eventId={event.id} />
   );
 };
 
 window.showNewEventForm = function (info) {
   const { start, end } = info;
-  const unmount = function () {
-    ReactDOM.unmountComponentAtNode(
-      document.getElementById("calendar-event-react-app"),
-    );
+  const container = document.getElementById("calendar-event-react-app");
+  
+  // Cleanup previous render
+  if (root) {
+    root.unmount();
     window.CRM.refreshAllFullCalendarSources();
+  }
+  
+  // Create new root
+  root = ReactDOM.createRoot(container);
+  const unmount = function() {
+    if (root) {
+      root.unmount();
+      window.CRM.refreshAllFullCalendarSources();
+    }
   };
-  unmount();
-  ReactDOM.render(
+  
+  root.render(
     <ExistingEvent
       onClose={unmount}
       eventId={0}
       start={start}
       end={end}
-    />,
-    document.getElementById("calendar-event-react-app"),
+    />
   );
 };

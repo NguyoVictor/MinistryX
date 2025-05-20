@@ -96,15 +96,31 @@ install_packages apache2 curl gawk git libapache2-mod-php mariadb-client mariadb
   php php-bcmath php-cli php-curl php-dev php-gd php-intl php-mbstring php-mysql \
   php-soap php-xml php-zip unzip
 
-# Fetch the latest release from GitHub
-LATEST_RELEASE=$(curl -s https://api.github.com/repos/NguyoVictor/MinistryX/releases/latest | grep "tag_name" | awk -F'"' '{print $4}')
+# Try to get the latest release tag name first
+LATEST_RELEASE=$(curl -s https://api.github.com/repos/Iambahati/MinistryX/releases/latest | grep "tag_name" | awk -F'"' '{print $4}')
 
+# If tag_name is empty, try to find available release zip files directly
 if [ -z "$LATEST_RELEASE" ]; then
-    echo "Error: Could not fetch the latest release. Ensure the repository has releases."
+    echo "No tag name found. Looking for available release zip files..."
+    # Get the HTML of the releases page
+    RELEASES_HTML=$(curl -s https://github.com/Iambahati/MinistryX/releases)
+    # Extract the filename of the first zip file
+    RELEASE_ZIP=$(echo "$RELEASES_HTML" | grep -o 'MinistryX-[0-9]\+\.[0-9]\+\.[0-9]\+\.zip' | head -n1)
+    
+    if [ -n "$RELEASE_ZIP" ]; then
+        # Extract version from the zip filename
+        LATEST_RELEASE=$(echo "$RELEASE_ZIP" | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
+        echo "Found release zip: $RELEASE_ZIP (version $LATEST_RELEASE)"
+    fi
+fi
+
+# If both approaches fail, stop the installation
+if [ -z "$LATEST_RELEASE" ]; then
+    echo "Error: No MinistryX release found. Installation cannot proceed."
     exit 1
 fi
 
-DOWNLOAD_URL="https://github.com/NguyoVictor/MinistryX/releases/download/$LATEST_RELEASE/MinistryX.zip"
+DOWNLOAD_URL="https://github.com/Iambahati/MinistryX/releases/download/$LATEST_RELEASE/MinistryX.zip"
 echo "Downloading MinistryX release: $LATEST_RELEASE from $DOWNLOAD_URL"
 
 # Download and extract the release
@@ -113,6 +129,23 @@ download_file "$DOWNLOAD_URL" "MinistryX.zip"
 run_or_exit unzip "MinistryX.zip" && rm "MinistryX.zip"
 run_or_exit $SUDO chown -R www-data:www-data MinistryX
 run_or_exit $SUDO mv MinistryX /var/www/html/
+
+# Set proper permissions for web files
+run_or_exit $SUDO find /var/www/html/MinistryX -type d -exec chmod 755 {} \;
+run_or_exit $SUDO find /var/www/html/MinistryX -type f -exec chmod 644 {} \;
+
+# Create logs directory if it doesn't exist and set permissions
+run_or_exit $SUDO mkdir -p /var/www/html/MinistryX/src/logs
+run_or_exit $SUDO chmod -R 777 /var/www/html/MinistryX/src/logs
+run_or_exit $SUDO chown -R www-data:www-data /var/www/html/MinistryX/src/Images
+run_or_exit $SUDO chown -R www-data:www-data /var/www/html/MinistryX/src/Images
+
+# If SELinux is enabled, set the proper context
+if command -v getenforce >/dev/null 2>&1 && [ "$(getenforce)" != "Disabled" ]; then
+    echo "SELinux detected, setting correct context for web files"
+    run_or_exit $SUDO semanage fcontext -a -t httpd_sys_content_t "/var/www/html/MinistryX(/.*)?"
+    run_or_exit $SUDO restorecon -Rv /var/www/html/MinistryX
+fi
 
 enable_and_start_service apache2
 enable_and_start_service mariadb

@@ -1,0 +1,137 @@
+name: Build, Test and Package
+
+on:
+  workflow_dispatch:
+  # pull_request:
+  #   branches:    
+  #     - main
+  #   paths-ignore:
+  #     - '**/*.md'
+  # push:
+  #   branches:
+  #   - main
+  #   tags:
+  #   - 'v*'
+  #   paths-ignore:
+  #     - '**/*.md'
+
+jobs:
+  test-n-package:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['20.x']
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        # fetch full history so things like auto-changelog work properly
+        fetch-depth: 0
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        # setting a registry enables the NODE_AUTH_TOKEN env variable where we can set an npm token.  REQUIRED
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Declare some variables
+      id: vars
+      shell: bash
+      run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
+    - name: Get version from git tag
+      id: package-version
+      run: |
+        # Get the tag as version if available, otherwise use package.json
+        GIT_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        if [[ ! -z "$GIT_TAG" ]]; then
+          VERSION=$(echo $GIT_TAG | sed 's/^v//')
+          echo "current-version=$VERSION" >> $GITHUB_OUTPUT
+        else
+          # Fallback to npm version if no tag
+          NPM_VERSION=$(node -p "require('./package.json').version")
+          echo "current-version=$NPM_VERSION" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Check Dependencies Sync
+      id: check-deps
+      run: |
+        if ! npm ci --dry-run --ignore-scripts; then
+          echo "Dependencies are not in sync! Please update package-lock.json."
+          exit 1
+        fi
+        echo "Dependencies are in sync."
+
+    - name: Get Env Ready
+      run: |
+        npm ci
+
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        cd src
+        echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Build App
+      run: |
+        npm run package
+
+    - name: Run Docker
+      run: |
+        npm run ci-docker-test-start
+        docker compose -f docker/docker-compose.test-php8-apache.yaml ps -a
+        docker compose -f docker/docker-compose.test-php8-apache.yaml logs
+
+    - name: Test Server
+      run: |
+          curl -vvv http://127.0.0.1/api/public/echo
+          docker compose -f docker/docker-compose.test-php8-apache.yaml ps -a
+          docker compose -f docker/docker-compose.test-php8-apache.yaml logs
+
+    # - name: Run Cypress Tests
+    #   run: |
+    #     npm run test
+
+    - name: Stop Docker
+      run: |
+        npm run ci-docker-test-down
+
+    - name: Create target directory
+      run: |
+        mkdir -p target
+
+    - name: Build project
+      run: |
+        zip -r target/MinistryX-${{ steps.package-version.outputs.current-version }}.zip . -x "node_modules/*" ".git/*" "target/*"
+  
+    - name: Upload zip file
+      uses: actions/upload-artifact@v4
+      with:
+        name: MinistryX-${{ steps.package-version.outputs.current-version}}
+        path: target/MinistryX-${{ steps.package-version.outputs.current-version }}.zip
+        if-no-files-found: error
+        retention-days: 30
+        
+    - name: Get release notes
+      run: echo ${{ github.sha }} > Release.txt
+
+    - name: List files in target
+      run: ls -l target
+        
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2.2.2
+      if: github.ref_type == 'tag'
+      with:
+        name: "Build, Test and Package"
+        files: |
+            Release.txt
+            target/MinistryX-${{ steps.package-version.outputs.current-version }}.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT }}

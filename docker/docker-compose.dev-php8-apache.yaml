@@ -14,6 +14,7 @@ services:
     volumes:
       - ../demo:/docker-entrypoint-initdb.d # auto-load the demo database as per: https://hub.docker.com/_/mariadb
     hostname: crm-database
+    command: --init-file=/docker-entrypoint-initdb.d/init-user.sql
     healthcheck:
       test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
       timeout: 20s
