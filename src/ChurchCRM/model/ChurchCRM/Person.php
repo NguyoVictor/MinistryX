@@ -131,12 +131,24 @@ class Person extends BasePerson implements PhotoInterface
 
     public function getClassificationName()
     {
-        $classificationName = 'Unassigned';
         $classification = $this->getClassification();
-        if ($classification !== null) {
-            $classificationName = $classification->getOptionName();
+        
+        // Ensure classification exists before accessing its properties
+        if ($classification === null) {
+            return 'Unassigned';
         }
-
+        
+        $classificationName = $classification->getOptionName();
+        if ($classificationName === 'Member') {
+            // Check if family exists and is deactivated
+            if ($this->getFamily() && $this->getFamily()->getDateDeactivated() !== null) {
+                return gettext('Adherent Member');
+            } else {
+                return gettext('Full Member');
+            }
+        }
+        
+        // Return original classification name for non-Member classifications
         return $classificationName;
     }
 
