@@ -78,9 +78,9 @@ function listPeople(Request $request, Response $response, array $args): Response
     $sInactiveClasses = implode(',', $aInactiveClasses);
 
     if ($familyActiveStatus === 'active') {
-        $members->leftJoinFamily()->where('(family_fam.fam_DateDeactivated is null) and (per_cls_id not in (' . $sInactiveClasses . ') )');
+        $members->leftJoinFamily()->where('(family_fam.fam_DateDeactivated is null) and (per_cls_id not in (' . $sInactiveClasses . ', 6, 7) )');
     } elseif ($familyActiveStatus === 'inactive') {
-        $members->leftJoinFamily()->where('(family_fam.fam_DateDeactivated is not null) or (per_cls_id in (' . $sInactiveClasses . ') )');
+        $members->leftJoinFamily()->where('(family_fam.fam_DateDeactivated is not null) or (per_cls_id in (' . $sInactiveClasses . ', 6, 7) )');
     }
 
     $members->find();

@@ -94,6 +94,9 @@ for ($i = 0; $i < $nGrps; $i++) {
 
     $groupRoleMemberships = Person2group2roleP2g2rQuery::create()
             ->joinWithPerson()
+            ->usePersonQuery()
+            ->where('Person.PerClsId NOT IN (6, 7)') // Exclude Deceased and Ex-Goers
+            ->endUse()
             ->orderBy(PersonTableMap::COL_PER_LASTNAME)
             ->_and()->orderBy(PersonTableMap::COL_PER_FIRSTNAME)
             ->findByGroupId($iGroupID);

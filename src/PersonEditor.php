@@ -127,6 +127,7 @@ $dFriendDate = date('Y-m-d');
 $iClassification = 0;
 $iViewAgeFlag = 0;
 $sPhoneCountry = '';
+$dDateOfDeath = '';
 
 $sFacebook = '';
 $sTwitter = '';
@@ -222,6 +223,7 @@ if (isset($_POST['PersonSubmit']) || isset($_POST['PersonSubmitAndAdd'])) {
     // Philippe Logel
     $dFriendDate = InputUtils::filterDate($_POST['FriendDate']);
     $dMembershipDate = InputUtils::filterDate($_POST['MembershipDate']);
+    $dDateOfDeath = InputUtils::filterDate($_POST['DateOfDeath']);
     $iClassification = InputUtils::legacyFilterInput($_POST['Classification'], 'int');
     $iEnvelope = 0;
     if (array_key_exists('EnvID', $_POST)) {
@@ -420,7 +422,8 @@ if (isset($_POST['PersonSubmit']) || isset($_POST['PersonSubmitAndAdd'])) {
             ->setFlags($per_Flags)
             ->setFacebook($sFacebook)
             ->setTwitter($sTwitter)
-            ->setLinkedIn($sLinkedIn);
+            ->setLinkedIn($sLinkedIn)
+            ->setDateOfDeath($dDateOfDeath);
 
         if (strlen($dMembershipDate) > 0) {
             $person->setMembershipDate($dMembershipDate);
@@ -545,6 +548,7 @@ if (isset($_POST['PersonSubmit']) || isset($_POST['PersonSubmitAndAdd'])) {
         $iFamilyRole = (int) $per_fmr_ID;
         $dMembershipDate = $per_MembershipDate;
         $dFriendDate = $per_FriendDate;
+        $dDateOfDeath = $per_DateOfDeath;
         $iClassification = (int) $per_cls_ID;
         $iViewAgeFlag = (int) $per_Flags;
 
@@ -1182,6 +1186,18 @@ require_once 'Include/Header.php';
                     </div>
                     <?php
                 } ?>
+                <div class="form-group col-md-3 col-lg-3" id="dateOfDeathField" style="display: none;">
+                    <label><?= gettext('Date of Death') ?>:</label>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <input type="text" name="DateOfDeath" class="form-control date-picker"
+                               value="<?= change_date_for_place_holder($dDateOfDeath) ?>" maxlength="10" id="dateOfDeath"
+                               size="10"
+                               placeholder="<?= SystemConfig::getValue("sDatePickerPlaceHolder") ?>">
+                    </div>
+                </div>
             </div>
         </div>
     </div>

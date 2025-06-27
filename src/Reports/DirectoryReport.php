@@ -105,7 +105,9 @@ if ($bDirUseTitlePage) {
 
 $sClassQualifier = '';
 if (strlen($sDirClassifications)) {
-    $sClassQualifier = 'AND per_cls_ID in (' . $sDirClassifications . ')';
+    $sClassQualifier = 'AND per_cls_ID IN (' . $sDirClassifications . ') AND per_cls_ID NOT IN (6, 7)'; // Exclude Deceased and Ex-Goers
+} else {
+    $sClassQualifier = 'AND per_cls_ID NOT IN (6, 7)'; // Exclude Deceased and Ex-Goers by default
 }
 
 $sWhereExt = '';

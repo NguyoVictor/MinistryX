@@ -56,6 +56,8 @@ $sSQL = "SELECT a.*, family_fam.*, COALESCE(cls.lst_OptionName , 'Unassigned') A
       LEFT JOIN person_per b ON a.per_EnteredBy = b.per_ID
       LEFT JOIN person_per c ON a.per_EditedBy = c.per_ID
       WHERE a.per_ID = " . $iPersonID;
+
+$dDateOfDeath = $person->getDateOfDeath();
 $rsPerson = RunQuery($sSQL);
 extract(mysqli_fetch_array($rsPerson));
 

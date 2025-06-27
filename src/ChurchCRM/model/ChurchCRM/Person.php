@@ -61,6 +61,20 @@ class Person extends BasePerson implements PhotoInterface
         return $this->getFlags() === 1 || empty($this->getBirthYear());
     }
 
+    public function getDeceasedDate(): ?\DateTimeImmutable
+    {
+        if (!empty($this->getPerDateDeceased())) {
+            return \DateTimeImmutable::createFromMutable($this->getPerDateDeceased());
+        }
+
+        return null;
+    }
+
+    public function isDeceased(): bool
+    {
+        return !empty($this->getPerDateDeceased());
+    }
+
     public function getBirthDate(): ?\DateTimeImmutable
     {
         if (
@@ -139,6 +153,11 @@ class Person extends BasePerson implements PhotoInterface
         }
         
         $classificationName = $classification->getOptionName();
+
+        if ($this->isDeceased()) {
+            return gettext('Deceased Members');
+        }
+
         if ($classificationName === 'Member') {
             // Check if family exists and is deactivated
             if ($this->getFamily() && $this->getFamily()->getDateDeactivated() !== null) {
@@ -146,6 +165,8 @@ class Person extends BasePerson implements PhotoInterface
             } else {
                 return gettext('Full Member');
             }
+        } elseif ($classificationName === 'Ex-Goers') {
+            return gettext('Ex-Goers');
         }
         
         // Return original classification name for non-Member classifications
