@@ -25,6 +25,17 @@ services:
       - ${DEV_MAILSERVER_PORT:-1025}:1025
       - ${DEV_MAILSERVER_GUI_PORT:-8025}:8025
     hostname: crmEmailServer
+    environment:
+      - MH_AUTH_FILE=/etc/mailhog/auth.txt
+    volumes:
+      - ./mailhog/auth.txt:/etc/mailhog/auth.txt # auth.txt file with username:bcrypt_hash format
+    command: -auth-file=/etc/mailhog/auth.txt  # Default credentials: churchmail:mailpass123
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:8025"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   webserver:
     ## Look into: https://hub.docker.com/r/nimmis/apache-php8
@@ -45,3 +56,9 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s

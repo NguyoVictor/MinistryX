@@ -30,3 +30,8 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
     sed -i 's/^post_max_size.*$/post_max_size = 2G/g' $PHP_INI_DIR/php.ini && \
     sed -i 's/^memory_limit.*$/memory_limit = 2G/g' $PHP_INI_DIR/php.ini && \
     sed -i 's/^max_execution_time.*$/max_execution_time = 120/g' $PHP_INI_DIR/php.ini
+
+# Set permissions
+RUN mkdir -p /var/www/html/logs && \
+    chown -R www-data:www-data /var/www/html/logs && \
+    chmod -R 775 /var/www/html/logs
